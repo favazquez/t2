@@ -28,16 +28,31 @@ class UsersController < ApplicationController
   end
 
   def index
-    render json: {status:"trying to show all"}
+    @users = User.all
+    jsonArray = []
+    for user in @users do
+      userJSON = {id: user.id, nombre: user.name, apellido: user.lastname, usuario: user.username, twitter: user.twitter }
+      jsonArray.append(userJSON)
+    end
+    render json: {usuarios: jsonArray, total: User.count }
   end
 
   def destroy
-    render json: {status:"trying to destroy"}
+    if User.exists?(params[:id])
+      @user = User.find(params[:id])
+      @user.destroy
+      render :nothing, status:204
+    else
+      render json: {error: "Usuario no encontrado"}, :status => 404
+    end
   end
 
   def edit
-    render json: {status:"trying to edit"}
+    if User.exists?(params[:id])
+      render json: {wea: params}
+    else
+      render json: {error: "Usuario no encontrado"}, :status => 404
+    end
   end
 
-  private
 end
